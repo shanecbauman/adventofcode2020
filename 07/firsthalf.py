@@ -3,7 +3,7 @@ import re
 
 os.chdir('./07')
 
-with open('puzzleinput.txt', 'r') as readfile:
+with open('examplepuzzle.txt', 'r') as readfile:
     puzzleinput = readfile.read()
 rules = puzzleinput.split('\n')
 
@@ -25,5 +25,22 @@ for rule in rules:
         "interior_bags": interior_bags
     })
 
+bags_holding_gold = []
+
+def find_outermost_bags(outer_bag, interior_bag):
+    print(outer_bag['color'])
+    if outer_bag['color'] == interior_bag:
+        return
+    for inner_bag in outer_bag['interior_bags']:
+        if outer_bag['color'] not in bags_holding_gold:
+            if inner_bag['color'] == interior_bag:
+                if outer_bag['color'] not in bags_holding_gold:
+                    bags_holding_gold.append(outer_bag['color'])
+                    for description in descriptions:
+                        find_outermost_bags(description, outer_bag['color'])
+    return
+
 for description in descriptions:
-    print(description)
+    find_outermost_bags(description, 'shiny gold')
+
+print(len(bags_holding_gold))
