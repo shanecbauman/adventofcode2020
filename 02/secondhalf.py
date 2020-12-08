@@ -20,7 +20,9 @@ class password_validator:
         letter = str_list[1][0]
         password = str_list[2]
 
-        if (password[int(char_range[0]) - 1] == letter) ^ (password[int(char_range[1]) - 1] == letter):
+        if (password[int(char_range[0]) - 1] == letter) and (password[int(char_range[1]) - 1] != letter):
+            self.validPasswords += 1
+        elif (password[int(char_range[0]) - 1] != letter) and (password[int(char_range[1]) - 1] == letter):
             self.validPasswords += 1
 
 passwords = password_validator()

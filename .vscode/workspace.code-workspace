@@ -1,10 +1,12 @@
 {
 	"folders": [
 		{
-			"path": ".."
+			"name": "01",
+			"path": "..\\01"
 		},
 		{
-			"path": "..\\01"
+			"name": "adventofcode2020",
+			"path": ".."
 		}
 	],
 	"settings": {}
