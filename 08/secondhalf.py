@@ -41,6 +41,8 @@ class run_instructions:
             sys.exit()
         index = self.ops[operation](index, offset)
         if index not in range(0, len(self.instructions)):
+            # Might have to add a modulus to get this to a corrext index number.  
+            # Not sure if the index number can be higher than the list length in either positive or negative directions
             index -= len(self.instructions)
         return self.execute_instructions(index)
 
