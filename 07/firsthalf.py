@@ -11,7 +11,6 @@ descriptions = []
 for rule in rules:
     details = rule.split(' bags contain ')
     details[1] = re.sub(r' bags?\.', '', details[1])
-
     bags = re.split(r' bags?, ', details[1])
     interior_bags = []
     for bag in bags:

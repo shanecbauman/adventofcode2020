@@ -3,7 +3,7 @@ import re
 
 os.chdir('./07')
 
-with open('examplepuzzle_02.txt', 'r') as readfile:
+with open('puzzleinput.txt', 'r') as readfile:
     puzzleinput = readfile.read()
 rules = puzzleinput.split('\n')
 
@@ -25,40 +25,16 @@ for rule in rules:
         "interior_bags": interior_bags
     })
 
-bags_in_gold = []
-total_bags = 0
+def find_inner_bag_count(outer_bag, descriptions):
+    bag_count = 0
+    if len(outer_bag['interior_bags']) == 0:
+        return bag_count
+    for i, inner_bag in enumerate(outer_bag['interior_bags']):
+        next_working_bag = list(filter(lambda bag: bag['color'] == inner_bag['color'], descriptions)).pop(0)
+        if i == len(outer_bag['interior_bags']) - 1:
+            return bag_count + inner_bag['quantity'] + (inner_bag['quantity'] * find_inner_bag_count(next_working_bag, descriptions))
+        else:
+            bag_count = bag_count + inner_bag['quantity'] + (inner_bag['quantity'] * find_inner_bag_count(next_working_bag, descriptions))
 
-def find_inner_bag_count(outer_bag, descriptions, bag_count):
-    working_bag = list(filter(lambda bag: bag['color'] == outer_bag, descriptions))
-    print(working_bag)
-    for inner_bag in working_bag[0]['interior_bags']:
-        next_working_bag = list(filter(lambda bag: bag['color'] == inner_bag['color'], descriptions))
-        if len(next_working_bag[0]['interior_bags']) == 0:
-            return 1
-        bag_count += inner_bag['quantity'] * find_inner_bag_count(inner_bag['color'], descriptions, bag_count)
-    return 1
-    # if outer_bag['color'] == interior_bag or outer_bag['color'] in bags_in_gold:
-    #     return
-    # for inner_bag in outer_bag['interior_bags']:
-    #     if len(inner_bag['interior_bags']) == 0:
-    #         return bag_count * 1
-    #     else:
-    #         bag_count = bag_count + inner_bag['quantity'] * find_inner_bag_count(inner_bag, )
-    #         # bags_in_gold.append(outer_bag['color'])
-    #         for inner_inner_bag in inner_bag['interior_bags']:
-    #             bag_count = bag_count + inner_inner_bag['quantity'] * find_inner_bag_count(inner_inner_bag, )
-    #             pass
-    #         for description in descriptions:
-    #             find_inner_bag_count(description, outer_bag['color'])
-
-
-
-# i = descriptions.index(['color'])
-
-# for description in descriptions:
-#     total_bags += find_inner_bag_count('shiny gold', description, 0)
-
-total_bags += find_inner_bag_count('shiny gold', descriptions, 0)
-print(total_bags)
-
-# print(len(bags_in_gold))
+gold_bag = list(filter(lambda bag: bag['color'] == 'shiny gold', descriptions)).pop(0)
+print(find_inner_bag_count(gold_bag, descriptions))
