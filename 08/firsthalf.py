@@ -6,44 +6,44 @@ os.chdir('./08')
 
 with open('puzzleinput.txt', 'r') as readfile:
     puzzleinput = readfile.read()
-raw_instructions = puzzleinput.split('\n')
 
-ops = {
-    "+": operator.add,
-    "-": operator.sub
-    }
+class run_instructions:
+    def __init__(self):
+        self.ops = {
+            "+": operator.add,
+            "-": operator.sub
+            }
+        self.accumulator = 0
+        self.instructions = []
 
-accumulator = 0
+    def compile_instructions(self, raw_instructions):
+        for instruction in raw_instructions:
+            components = re.split(r' |(\+|\-)', instruction)
+            components.pop(1)
+            components.pop(1)
+            components.append(False)
+            self.instructions.append(components)
 
-instructions = []
-for instruction in raw_instructions:
-    components = re.split(r' |(\+|\-)', instruction)
-    components.pop(1)
-    components.pop(1)
-    components.append(False)
-    instructions.append(components)
+    def indexer(self, index, offset, operation):
+        index = self.ops[operation](index, offset)
+        if index not in range(0, len(self.instructions) - 1):
+            index -= len(self.instructions)
+        self.execute_instructions(index)
 
-def indexer(instructions, index, offset, operation):
-    index = ops[operation](index, offset)
-    # Need to add checks in for when we go over list length
-    if index == len(instructions) - 1:
-        return
-    else:
-        execute_instruction(instructions, index)
+    def execute_instructions(self, index):
+        if self.instructions[index][3] == True:
+            return
+        else:
+            self.instructions[index][3] = True
+        if self.instructions[index][0] == 'acc':
+            self.accumulator = self.ops[self.instructions[index][1]](self.accumulator, int(self.instructions[index][2]))
+            self.indexer(index, 1, "+")
+        elif self.instructions[index][0] == 'jmp':
+            self.indexer(index, int(self.instructions[index][2]), self.instructions[index][1])
+        elif self.instructions[index][0] == 'nop':
+            self.indexer(index, 1, "+")
 
-
-def execute_instruction(instructions, index):
-    if instructions[index][3] == True:
-        return
-    else:
-        instructions[index][3] == True
-    if instructions[index][0] == 'acc':
-        accumulator = ops[instructions[index][1]](accumulator, instructions[index][2])
-        index += 1
-    elif instructions[index][0] == 'jmp':
-        pass
-    elif instructions[index][0] == 'nop':
-        pass
-
-
-execute_instruction(instructions, 0)
+executor = run_instructions()
+executor.compile_instructions(puzzleinput.split('\n'))
+executor.execute_instructions(0)
+print(executor.accumulator)
