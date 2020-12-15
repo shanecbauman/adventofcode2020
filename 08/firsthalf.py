@@ -26,8 +26,6 @@ class run_instructions:
 
     def indexer(self, index, offset, operation):
         index = self.ops[operation](index, offset)
-        if index not in range(0, len(self.instructions) - 1):
-            index -= len(self.instructions)
         self.execute_instructions(index)
 
     def execute_instructions(self, index):
