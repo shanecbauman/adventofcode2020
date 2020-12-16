@@ -1,14 +1,7 @@
 import os
 import re
-import math
 
 os.chdir('./12')
-
-# examplepuzzle2.txt
-# exampleinput.txt
-# puzzleinput.txt
-
-# https://stackoverflow.com/questions/34372480/rotate-point-about-another-point-in-degrees-python
 
 with open('puzzleinput.txt', 'r') as readfile:
     puzzleinput = readfile.read().split('\n')
@@ -20,41 +13,54 @@ for i, p_input in enumerate(puzzleinput):
 class navigation():
     def __init__(self):
         self.boat_loc = [0, 0]
-        self.waypt_loc = [10, 1]
-        self.boat_deg = 90
-        # Degrees, x axis, y axis
-        self.cardinal_dirs = [
-            [0, 0, 1],
-            [90, 1, 0],
-            [180, 0, -1],
-            [270, -1, 0]
+        self.rel_wypt_loc = [10, 1]
+        # x axis, y axis
+        self.direct_plns = [
+            [1, 1],
+            [1, -1],
+            [-1, -1],
+            [-1, 1]
         ]
 
-    def check_dir(self):
-        for card_dir in self.cardinal_dirs:
-            if card_dir[0] == self.boat_deg:
-                self.boat_dir = card_dir[1:]
-                return
+    def rotate_waypoint(self, direct, rot_amnt):
+        rot_cnt = rot_amnt // 90
+        for i, plane in enumerate(self.direct_plns):
+            same_sign = (abs(self.rel_wypt_loc[0]) + abs(plane[0]) == 
+                         abs(self.rel_wypt_loc[0] + plane[0]) and 
+                         abs(self.rel_wypt_loc[1]) + abs(plane[1]) == 
+                         abs(self.rel_wypt_loc[1] + plane[1]))
+            if same_sign:
+                cur_pln = i
+                break
+        new_pln = (cur_pln + (rot_cnt * direct)) % len(self.direct_plns)
+        if (cur_pln - new_pln) % 2 == 0:
+            wypt_x = abs(self.rel_wypt_loc[0]) * self.direct_plns[new_pln][0]
+            wypt_y = abs(self.rel_wypt_loc[1]) * self.direct_plns[new_pln][1]
+        else:
+            wypt_x = abs(self.rel_wypt_loc[1]) * self.direct_plns[new_pln][0]
+            wypt_y = abs(self.rel_wypt_loc[0]) * self.direct_plns[new_pln][1]
+        self.rel_wypt_loc = [wypt_x, wypt_y]
+
+    def mvship(self, value):
+        boat_x = self.boat_loc[0] + (self.rel_wypt_loc[0] * value)
+        boat_y = self.boat_loc[1] + (self.rel_wypt_loc[1] * value)
+        self.boat_loc = [boat_x, boat_y]
 
     def move(self, action, value):
         if action == 'L':
-            self.boat_deg = (self.boat_deg - value) % 360
-            self.check_dir()
+            self.rotate_waypoint(-1, value)
         elif action == 'R':
-            self.boat_deg = (self.boat_deg + value) % 360
-            self.check_dir()
+            self.rotate_waypoint(1, value)
         if action == 'N':
-            self.waypt_loc[1] += value
+            self.rel_wypt_loc[1] += value
         elif action == 'E':
-            self.waypt_loc[0] += value
+            self.rel_wypt_loc[0] += value
         elif action == 'S':
-            self.waypt_loc[1] -= value
+            self.rel_wypt_loc[1] -= value
         elif action == 'W':
-            self.waypt_loc[0] -= value
+            self.rel_wypt_loc[0] -= value
         elif action == 'F':
-            mv_amt = [element * value for element in self.boat_dir]
-            for i in range(0, len(self.boat_loc)):
-                self.boat_loc[i] += mv_amt[i]
+            self.mvship(value)
 
 navigate = navigation()
 for direction in directions:
